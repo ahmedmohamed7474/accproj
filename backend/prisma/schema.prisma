@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phonenum  String
+  email     String   @unique
+  username  String   @unique
+  password  String?
+  role_id   Int      
+  role      Role     @relation(fields: [role_id], references: [id])
+ 
+  vat                VAT[]   
+  publicTax          PublicTax[]
+  electronicBill     ElectronicBill[]
+  commercialRegister CommercialRegister[]
+  other              Other[]
+  tasks             Task[]   @relation("EmployeeTasks")  
+
+  createdAt DateTime @default(now())
+}
+
+model Role {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  employees Employee[] 
+}
+
+model Company {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phonenum  String
+ tasks       Task[]     @relation("CompanyTasks")
+  vats                VAT[]   
+  publicTaxes         PublicTax[]
+  electronicBills     ElectronicBill[]
+  commercialRegisters CommercialRegister[]
+  other              Other[]
+
+  createdAt DateTime @default(now())
+}
+
+model VAT {
+  id        Int    @id @default(autoincrement())
+  empId     Int    
+  employee  Employee @relation(fields: [empId], references: [id]) 
+  compId    Int?   
+  company   Company? @relation(fields: [compId], references: [id]) 
+  taskId    Int?
+  task      Task?    @relation("TaskVAT", fields: [taskId], references: [id]) // Relation to Task
+  email      String
+  pass       Int
+  createdAt  DateTime @default(now())
+  CreationDate DateTime
+  expiryDate  DateTime?
+  modifiedAt  DateTime?
+  officeLocation String
+}
+
+model PublicTax {
+  id        Int    @id @default(autoincrement())
+  empId     Int    
+  employee  Employee @relation(fields: [empId], references: [id]) 
+  compId    Int?   
+  company   Company? @relation(fields: [compId], references: [id]) 
+  taskId    Int?
+  task      Task?    @relation("TaskPublicTax", fields: [taskId], references: [id]) // Relation to Task
+  taxRegNo  Int @unique
+  taxFileNo Int @unique
+  email     String
+  pass      Int
+  CreationDate DateTime
+  createdAt DateTime @default(now())
+  expiryDate DateTime?
+  modifiedAt DateTime?
+  officeLocation String
+}
+
+model ElectronicBill {
+  id        Int    @id @default(autoincrement())
+  empId     Int    
+  employee  Employee @relation(fields: [empId], references: [id]) 
+  compId    Int?   
+  company   Company? @relation(fields: [compId], references: [id]) 
+  taskId    Int?
+  task      Task?    @relation("TaskElectronicBill", fields: [taskId], references: [id]) // Relation to Task
+  compName  String
+  email     String
+  pass      Int
+  token     String
+  CreationDate DateTime
+  createdAt DateTime @default(now())
+  expiryDate DateTime?
+  modifiedAt DateTime?
+}
+
+model CommercialRegister {
+  id        Int    @id @default(autoincrement())
+  empId     Int    
+  employee  Employee @relation(fields: [empId], references: [id]) 
+  compId    Int?   
+  company   Company? @relation(fields: [compId], references: [id]) 
+  taskId    Int?
+  task      Task?    @relation("TaskCommercialRegister", fields: [taskId], references: [id]) // Relation to Task
+  compName          String
+  legalEntity       String
+  numCommRegister   Int
+  activites         String
+  location          String
+  qcomp             Int
+  CreationDate      DateTime
+  createdAt DateTime @default(now())
+  expiryDate DateTime?
+  modifiedAt DateTime?
+}
+model Other {
+  id           Int      @id @default(autoincrement())
+  empId        Int    
+  employee     Employee @relation(fields: [empId], references: [id]) 
+  compId       Int?   
+  company      Company? @relation(fields: [compId], references: [id]) 
+  taskId       Int?
+  task         Task?    @relation("TaskOther", fields: [taskId], references: [id]) // Relation to Task
+  type         String   // Type of the record
+  CreationDate DateTime // Custom creation date
+  createdAt    DateTime @default(now()) // Automatic timestamp for creation
+  expiryDate   DateTime? // Optional expiry date
+  modifiedAt   DateTime? // Optional modification timestamp
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  clientName  String
+  clientPhone String
+  type        String
+  status      String  @default("PENDING")
+  companyId   Int?      
+  company     Company?  @relation("CompanyTasks", fields: [companyId], references: [id])
+  employeeId  Int
+  employee    Employee @relation("EmployeeTasks", fields: [employeeId], references: [id]) 
+  createdAt   DateTime @default(now())
+
+  vat                VAT[]               @relation("TaskVAT")
+  publicTax          PublicTax[]         @relation("TaskPublicTax")
+  electronicBill     ElectronicBill[]    @relation("TaskElectronicBill")
+  commercialRegister CommercialRegister[] @relation("TaskCommercialRegister")
+  other              Other[]             @relation("TaskOther")
+}

@@ -109,6 +109,7 @@ class TaskRepository {
       throw new ApiError(500, 'Error checking task data', [error]);
     }
   }
+  
 }
 
 module.exports = TaskRepository;

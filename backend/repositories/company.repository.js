@@ -8,6 +8,7 @@ class CompanyRepository {
                 data: {
                     name: data.name,
                     phonenum: data.phonenum,
+                    createdAt: data.createdAt || new Date(),
                     
                 }
             });

@@ -5,5 +5,7 @@ const commercialRegisterController = require('../controllers/commericalregister.
 router.post('/', commercialRegisterController.create)
 router.get('/', commercialRegisterController.getAll)
 router.get('/:id', commercialRegisterController.getById)
+router.get('/by-task/:taskId', commercialRegisterController.getByTaskId)
+router.put('/:id', commercialRegisterController.update)
 
 module.exports = router

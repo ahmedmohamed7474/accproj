@@ -30,6 +30,27 @@ class ElectronicBillController {
       res.status(500).json({ error: error.message })
     }
   }
+  async update(req, res) {
+    try {
+      const { id } = req.params
+      const updateData = req.body
+      const updatedElectronicBill = await electronicBillRepository.update(Number(id), updateData)
+      if (!updatedElectronicBill) return res.status(404).json({ message: 'Electronic Bill not found' })
+      res.json(updatedElectronicBill)
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  }
+  async getByTaskId(req, res) {
+    try {
+      const { taskId } = req.params;
+      const electronicBill = await electronicBillRepository.getByTaskId(taskId);
+      if (!electronicBill) return res.status(404).json({ message: 'Electronic Bill not found' });
+      res.json(electronicBill);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new ElectronicBillController()

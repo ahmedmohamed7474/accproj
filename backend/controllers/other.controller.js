@@ -30,6 +30,27 @@ class OtherController {
       res.status(500).json({ error: error.message }); // Handle errors
     }
   }
+  async update(req, res) {
+    try {
+      const { id } = req.params; // Get the ID from the request parameters
+      const updateData = req.body; // Get update data from the request body
+      const updatedOther = await otherRepository.update(Number(id), updateData); // Update the record
+      if (!updatedOther) return res.status(404).json({ message: 'Other record not found' }); // Handle not found
+      res.json(updatedOther); // Return the updated record
+    } catch (error) {
+      res.status(500).json({ error: error.message }); // Handle errors
+    }
+  }
+  async getByTaskId(req, res) {
+    try {
+      const { taskId } = req.params;
+      const other = await otherRepository.getByTaskId(taskId);
+      if (!other) return res.status(404).json({ message: 'Other record not found' });
+      res.json(other);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new OtherController();
